@@ -1,0 +1,5 @@
+n = int(input())
+numbers = sorted([int(x) for x in input().split()])
+one = sum(numbers[:n])
+two = sum(numbers[n:])
+print(two - one)
