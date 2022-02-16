@@ -1,19 +1,17 @@
-from sys import stdin
-input = stdin.readline
-num = int(input())
-used = [0] * (num + 1)
-val = int(input())
-done = False
-counter = 0
-while not done and counter < val:
-    dock = int(input())
-    while dock > 0 and used[dock] > 0:
-        tmp = used[dock]
-        used[dock] += 1
-        dock -= tmp
-    if dock <= 0:
-        done = True
-        break
-    used[dock] = 1
-    counter += 1
-print(counter)
+from sys import exit
+
+n = int(input())
+go = [0] * (n + 1)
+q = int(input())
+for i in range(q):
+    # print(go)
+    v = int(input())
+    while go[v] != 0 and v - go[v] >= 1:
+        tmp = v - go[v]
+        go[v] += 1
+        v = tmp
+    if go[v] != 0:
+        print(i)
+        exit()
+    go[v] += 1
+print(q)

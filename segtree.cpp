@@ -1,67 +1,53 @@
 //
-// Created by Aaron Zhu on 2021-07-01.
+// Created by Aaron Zhu on 2022-02-15.
 //
 
-#include <iostream>
-#include <vector>
-#include <set>
-#include <cmath>
-#include <algorithm>
-#include <functional>
-#include <queue>
-#define ll long long
-#define pii pair<int, int>
-#define boost() cin.tie(0); cin.sync_with_stdio(0)
-#define scan(x) do{while((x=getchar())<'0'); for(x-='0'; '0'<=(_=getchar()); x=(x<<3)+(x<<1)+_-'0');}while(0)
-char _;
+#include "bits/stdc++.h"
 using namespace std;
+
 #define MAX 100001
-struct SegNode {
-    int left, right, minimum;
-};
-int n, q, ind, x;
-char instruction;
-SegNode seg[MAX * 4];
+#define INF 1e7
+
+int n, m, x, y;
+char ins;
 int arr[MAX];
+int seg[4 * MAX];
 
-int segInit(int node, int left, int right) {
-    int mid;
-    seg[node].left = left;
-    seg[node].right = right;
-    if (left == right) {
-        return seg[node].minimum = arr[left];
-    }
-    mid = (left + right) / 2;
-    return seg[node].minimum = min(segInit(node * 2, left, mid), segInit(node * 2 + 1, mid + 1, right));
+inline int build(int node, int left, int right) {
+    if (left == right) return seg[node] = arr[left];
+    int mid = (left + right) / 2;
+    return seg[node] = min(build(node * 2, left, mid), build(node * 2 + 1, mid + 1, right));
 }
 
-int query(int node, int left, int right) {
-    if (right < seg[node].left || left > seg[node].right) return 200000000;
-    if (left <= seg[node].left && seg[node].right <= right) return seg[node].minimum;
-    return min(query(node * 2, left, right), query(node * 2 + 1, left, right));
+inline int update(int node, int left, int right, int ind) {
+    if (left == right) return seg[node] = arr[ind];
+    int mid = (left + right) / 2;
+    if (ind <= mid) update(node * 2, left, mid, ind);
+    else update(node * 2 + 1, mid + 1, right, ind);
+    return seg[node] = min(seg[node * 2], seg[node * 2 + 1]);
 }
 
-int update(int node, int index) {
-    if (seg[node].left == seg[node].right) return seg[node].minimum = arr[index];
-    if (index <= seg[node * 2].right) update(node * 2, index);
-    else update(node * 2 + 1, index);
-    return seg[node].minimum = min(seg[node * 2].minimum, seg[node * 2 + 1].minimum);
+inline int query(int node, int left, int right, int l, int r) {
+    if (right < l || r < left) return INF;
+    if (l <= left && right <= r) return seg[node];
+    int mid = (left + right) / 2;
+    return min(query(node * 2, left, mid, l, r), query(node * 2 + 1, mid + 1, right, l, r));
 }
 
-int main()
-{
-    boost();
-    cin >> n >> q;
-    for (int i = 0; i < n; i += 1) cin >> arr[i];
-    segInit(1, 0, n - 1);
-    for (int i = 0; i < q; i += 1) {
-        cin >> instruction >> ind >> x;
-        if (instruction == 'Q') {
-            cout << query(1, ind, x) << endl;
-        } else {
-            arr[ind] = x;
-            update(1, ind);
+int main() {
+    cin.tie(0); cin.sync_with_stdio(0);
+
+    cin >> n >> m;
+    for (int i = 1; i <= n; i += 1) cin >> arr[i];
+    build(1, 1, n);
+    for (int i = 0; i < m; i += 1) {
+        cin >> ins >> x >> y;
+        if (ins == 'M') {
+            arr[x + 1] = y;
+            update(1, 1, n, x + 1);
+        } else if (ins == 'Q') {
+            cout << query(1, 1, n, x + 1, y + 1) << '\n';
         }
     }
-    return 0;
+
 }
