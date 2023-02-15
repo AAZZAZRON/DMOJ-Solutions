@@ -1,10 +1,21 @@
-def solve(curr, ind):
+import sys
+input = lambda: sys.stdin.readline()[:-1]
+def check(key):
     global n, k
-    if ind == k:
-        return min(curr)
-    return max(solve([curr[x] + (grades[x][ind] == "T") for x in range(n)], ind + 1), solve([curr[x] + (grades[x][ind] == "F") for x in range(n)], ind + 1))
+    m = k + 1
+    for test in arr:
+        ct = 0
+        for i in range(k):
+            if test[i] == key[i]:
+                ct += 1
+        m = min(m, ct)
+    return m
 
 
-n, k = [int(x) for x in input().split()]
-grades = [input() for _ in range(n)]
-print(solve([0] * n, 0))
+def makeKeys(key="", dep=0):
+    global n, k, ans
+    if dep == k:
+        ans = max(ans, check(key))
+        return
+    makeKeys(key + "T", dep + 1)
+    makeKeys(key + "F", dep + 1)
